@@ -1,0 +1,17 @@
+[project]
+name = "ai-reply-index"
+version = "0.1.0"
+description = "A GUI helper app to log AI prompts and responses."
+authors = [
+    {name = "sandy-sp",email = "sandeep.paidipati@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pyqt5 (>=5.15.11,<6.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
