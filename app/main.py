@@ -4,18 +4,37 @@ import json
 from datetime import datetime
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QTextEdit, QLineEdit, QPushButton,
-    QVBoxLayout, QHBoxLayout, QComboBox, QCheckBox, QFileDialog, QMessageBox
+    QVBoxLayout, QHBoxLayout, QComboBox, QCheckBox, QFileDialog, QMessageBox,
+    QTabWidget
 )
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
 
 class AIReplyIndexApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("AI Reply Index - Prompt Logger")
+        self.setMinimumWidth(600)
+        font = QFont("Arial", 10)
+        self.setFont(font)
         self.init_ui()
 
     def init_ui(self):
+        main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(15, 15, 15, 15)
+        main_layout.setSpacing(10)
+
+        self.tabs = QTabWidget()
+        self.editor_tab = QWidget()
+        self.init_editor_ui()
+        self.tabs.addTab(self.editor_tab, "New Entry")
+
+        main_layout.addWidget(self.tabs)
+        self.setLayout(main_layout)
+
+    def init_editor_ui(self):
         layout = QVBoxLayout()
+        layout.setSpacing(10)
 
         self.prompt_input = QTextEdit()
         self.prompt_input.setPlaceholderText("Enter your prompt here")
@@ -51,7 +70,7 @@ class AIReplyIndexApp(QWidget):
         self.save_button.clicked.connect(self.save_entry)
         layout.addWidget(self.save_button)
 
-        self.setLayout(layout)
+        self.editor_tab.setLayout(layout)
 
     def save_entry(self):
         prompt = self.prompt_input.toPlainText().strip()
