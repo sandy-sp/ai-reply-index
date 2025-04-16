@@ -10,8 +10,9 @@ from services.model_registry import ModelRegistry
 from services.file_manager import FileManager
 
 class NewEntryTab(QWidget):
-    def __init__(self):
+    def __init__(self, base_path="prompts"):
         super().__init__()
+        self.base_path = base_path
         self.registry = ModelRegistry()
         self.init_ui()
 
@@ -68,7 +69,7 @@ class NewEntryTab(QWidget):
 
         today = datetime.now().strftime('%Y-%m-%d')
         slug = "_".join(prompt[:40].lower().split())
-        folder_name = os.path.join("prompts", f"{today}_{slug}")
+        folder_name = os.path.join(self.base_path, f"{today}_{slug}")
 
         os.makedirs(folder_name, exist_ok=True)
 
