@@ -6,7 +6,9 @@ class ConfigManager:
         self.config_path = os.path.join("data", "config.json")
         self.default_config = {
             "theme": "light",
-            "save_path": "prompts"
+            "save_path": "prompts",
+            "use_database": True,
+            "database_path": "data/prompt_index.db"
         }
         os.makedirs("data", exist_ok=True)
         self._ensure_config()
