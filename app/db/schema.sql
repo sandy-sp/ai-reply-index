@@ -3,8 +3,7 @@
 CREATE TABLE IF NOT EXISTS Prompt (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     text TEXT NOT NULL,
-    created_at TEXT NOT NULL,
-    tags TEXT
+    created_at TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Model (
@@ -17,6 +16,8 @@ CREATE TABLE IF NOT EXISTS Response (
     prompt_id INTEGER NOT NULL,
     model_id INTEGER NOT NULL,
     content TEXT NOT NULL,
+    content_html TEXT,
+    content_plaintext TEXT,
     created_at TEXT NOT NULL,
     FOREIGN KEY (prompt_id) REFERENCES Prompt(id),
     FOREIGN KEY (model_id) REFERENCES Model(id)
