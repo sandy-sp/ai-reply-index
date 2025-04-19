@@ -58,7 +58,7 @@ class ModelRegistry:
             self.db.get_or_create_model(name)
 
     def fetch_huggingface_models(self, limit=50):
-        hf_models = self.api.list_models(filter="text-generation", sort="downloads", limit=limit)
+        hf_models = self.api.list_models(filter="text-generation", sort="downloads", limit=limit, full=False)
         for model in hf_models:
             name = model.modelId
             if name:
