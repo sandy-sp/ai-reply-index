@@ -8,8 +8,8 @@ from PyQt5.QtWidgets import (
     QLineEdit, QComboBox, QScrollArea, QFrame, QSplitter, QCheckBox
 )
 from PyQt5.QtCore import Qt
-from app.services.model_registry import ModelRegistry
 from app.services.prompt_service import PromptService
+from app.services.model_service import ModelService
 
 class BrowseTab(QWidget):
     def __init__(self, base_path="prompts"):
@@ -17,7 +17,7 @@ class BrowseTab(QWidget):
         self.base_path = base_path
         self.selected_folder = None
         self.prompt_service = PromptService()
-        self.registry = ModelRegistry()
+        self.model_service = ModelService()
         self.init_ui()
         self.load_tags()
         self.load_prompt_folders()
@@ -181,7 +181,6 @@ class BrowseTab(QWidget):
         if model == "Any":
             model = None
         include_response = self.include_response_check.isChecked()
-
         results = self.prompt_service.search_prompts(
             keyword=keyword,
             tags=tags,
@@ -246,7 +245,7 @@ class BrowseTab(QWidget):
             original = {}
 
         original.update(updated_data)
-        with open(metadata_path, "w", encoding="utf-8") as f:
+        with open(metadata_path, "w", encoding='utf-8') as f:
             json.dump(original, f, indent=2)
 
         QMessageBox.information(self, "Updated", "Entry successfully updated.")
@@ -276,9 +275,9 @@ class BrowseTab(QWidget):
     def refresh_model_filter(self):
         self.model_filter.clear()
         self.model_filter.addItem("Any")
-        models = self.registry.load_models()
+        models = self.model_service.get_models()
         self.model_filter.addItems(sorted(models))
 
     def refresh_and_reload_model_filter(self):
-        self.registry.refresh_registry()
+        self.model_service.refresh_all_models()
         self.refresh_model_filter()
