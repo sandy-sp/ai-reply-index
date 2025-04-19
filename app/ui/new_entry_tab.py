@@ -1,4 +1,5 @@
 import os
+import re
 import json
 from datetime import datetime
 from PyQt5.QtWidgets import (
@@ -75,7 +76,7 @@ class NewEntryTab(QWidget):
     def save_entry(self):
         prompt = self.prompt_input.toPlainText().strip()
         model = self.model_selector.currentText().strip()
-        sanitized_model = model.replace('/', '__')
+        sanitized_model = re.sub(r'[^\w\-]', '_', model)
         response = self.response_input.toPlainText().strip()
         tags = [tag.strip() for tag in self.tags_input.text().split(',') if tag.strip()]
 
