@@ -14,6 +14,7 @@ from app.services.model_registry import ModelRegistry
 import html2text
 import pypandoc
 from docx2md import do_convert
+import mdformat
 
 class MarkdownTextEdit(QTextEdit):
     def __init__(self):
@@ -146,10 +147,15 @@ class NewEntryTab(QWidget):
         if self.use_markdown.isChecked():
             prompt_md = f"# Prompt\n\n{prompt}\n"
             response_md = f"# Response from {model}\n\n{response}\n"
+
+            formatted_prompt_md = mdformat.text(prompt_md)
+            formatted_response_md = mdformat.text(response_md)
+
             with open(os.path.join(folder_name, "prompt.md"), 'w', encoding='utf-8') as f:
-                f.write(prompt_md)
+                f.write(formatted_prompt_md)
+
             with open(os.path.join(folder_name, f"{sanitized_model}.md"), 'w', encoding='utf-8') as f:
-                f.write(response_md)
+                f.write(formatted_response_md)
 
         if self.use_json.isChecked():
             data = {
