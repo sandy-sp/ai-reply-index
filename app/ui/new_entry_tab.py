@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import tempfile
 from datetime import datetime
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QTextEdit, QLineEdit, QPushButton,
@@ -9,6 +10,31 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from app.db.db_manager import DBManager
 from app.services.model_registry import ModelRegistry
+import html2text
+import pypandoc
+from docx2md import do_convert
+
+class MarkdownTextEdit(QTextEdit):
+    def insertFromMimeData(self, source):
+        if source.hasHtml():
+            html = source.html()
+            markdown = html2text.html2text(html)
+            self.insertPlainText(markdown)
+        elif source.hasText():
+            text = source.text()
+            if text.startswith('<?xml') or '<w:document' in text:
+                try:
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp:
+                        tmp.write(text.encode('utf-8'))
+                        tmp_path = tmp.name
+                    markdown = pypandoc.convert_file(tmp_path, 'gfm')
+                except Exception:
+                    markdown = do_convert(tmp_path, use_md_table=True)
+                self.insertPlainText(markdown)
+            else:
+                super().insertFromMimeData(source)
+        else:
+            super().insertFromMimeData(source)
 
 class NewEntryTab(QWidget):
     def __init__(self, base_path="prompts"):
@@ -23,7 +49,7 @@ class NewEntryTab(QWidget):
         layout.setContentsMargins(15, 15, 15, 15)
         layout.setSpacing(10)
 
-        self.prompt_input = QTextEdit()
+        self.prompt_input = MarkdownTextEdit()
         self.prompt_input.setPlaceholderText("Enter your prompt here")
         layout.addWidget(QLabel("Prompt:"))
         layout.addWidget(self.prompt_input)
@@ -38,7 +64,7 @@ class NewEntryTab(QWidget):
         self.refresh_button.clicked.connect(self.refresh_and_reload_models)
         layout.addWidget(self.refresh_button)
 
-        self.response_input = QTextEdit()
+        self.response_input = MarkdownTextEdit()
         self.response_input.setPlaceholderText("Paste the model's response here")
         layout.addWidget(QLabel("Response:"))
         layout.addWidget(self.response_input)
