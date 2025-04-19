@@ -10,7 +10,10 @@ requires-python = ">=3.12,<4"
 dependencies = [
     "pyqt5 (>=5.15.11,<6.0.0)",
     "markdown2 (>=2.5.3,<3.0.0)",
-    "huggingface-hub (>=0.30.2,<0.31.0)"
+    "huggingface-hub (>=0.30.2,<0.31.0)",
+    "html2text (>=2025.4.15,<2026.0.0)",
+    "pypandoc (>=1.15,<2.0)",
+    "docx2md (>=1.0.3,<2.0.0)"
 ]
 
 
