@@ -75,6 +75,7 @@ class NewEntryTab(QWidget):
     def save_entry(self):
         prompt = self.prompt_input.toPlainText().strip()
         model = self.model_selector.currentText().strip()
+        sanitized_model = model.replace('/', '__')
         response = self.response_input.toPlainText().strip()
         tags = [tag.strip() for tag in self.tags_input.text().split(',') if tag.strip()]
 
@@ -93,7 +94,7 @@ class NewEntryTab(QWidget):
             response_md = f"# Response from {model}\n\n{response}\n"
             with open(os.path.join(folder_name, "prompt.md"), 'w', encoding='utf-8') as f:
                 f.write(prompt_md)
-            with open(os.path.join(folder_name, f"{model}.md"), 'w', encoding='utf-8') as f:
+            with open(os.path.join(folder_name, f"{sanitized_model}.md"), 'w', encoding='utf-8') as f:
                 f.write(response_md)
 
         if self.use_json.isChecked():
