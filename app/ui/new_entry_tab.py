@@ -9,9 +9,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, QMimeData
 from PyQt5.QtGui import QDropEvent
-# from app.db.db_manager import DBManager
 from app.services.prompt_service import PromptService
-from app.services.model_registry import ModelRegistry
+from app.services.model_service import ModelService
 import html2text
 import pypandoc
 from docx2md import do_convert
@@ -70,7 +69,7 @@ class NewEntryTab(QWidget):
         super().__init__()
         self.base_path = base_path
         self.prompt_service = PromptService()
-        self.registry = ModelRegistry()
+        self.model_service = ModelService()
         self.init_ui()
 
     def init_ui(self):
@@ -120,11 +119,11 @@ class NewEntryTab(QWidget):
 
     def refresh_model_list(self):
         self.model_selector.clear()
-        models = self.registry.load_models()
+        models = self.model_service.get_models()
         self.model_selector.addItems(sorted(models))
 
     def refresh_and_reload_models(self):
-        self.registry.refresh_registry()
+        self.model_service.refresh_all_models()
         self.refresh_model_list()
         QMessageBox.information(self, "Models Updated", "Model list refreshed from external sources.")
 
@@ -169,7 +168,6 @@ class NewEntryTab(QWidget):
             with open(os.path.join(folder_name, "metadata.json"), 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2)
 
-        # Refactored to use PromptService
         self.prompt_service.create_prompt(prompt, response, model, tags)
 
         QMessageBox.information(self, "Success", f"Entry saved to {folder_name}")
