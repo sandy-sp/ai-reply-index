@@ -17,8 +17,8 @@ class DBManager:
     def add_prompt(self, text, tags=None):
         cur = self.conn.cursor()
         cur.execute(
-            "INSERT INTO Prompt (text, created_at, tags) VALUES (?, ?, ?)",
-            (text, datetime.now().isoformat(), ",".join(tags or []))
+            "INSERT INTO Prompt (text, created_at) VALUES (?, ?)",
+            (text, datetime.now().isoformat())
         )
         prompt_id = cur.lastrowid
         self.conn.commit()
