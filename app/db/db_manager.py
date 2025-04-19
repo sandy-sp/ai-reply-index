@@ -53,7 +53,7 @@ class DBManager:
         )
         self.conn.commit()
 
-    def search_prompts(self, keyword=None, tags=None, start_date=None, end_date=None):
+    def search_prompts(self, keyword=None, tags=None, start_date=None, end_date=None, include_response=False):
         sql = "SELECT DISTINCT p.* FROM Prompt p"
         joins = []
         conditions = ["1=1"]
@@ -62,18 +62,22 @@ class DBManager:
         if tags:
             joins.append("JOIN PromptTag pt ON p.id = pt.prompt_id")
             joins.append("JOIN Tag t ON t.id = pt.tag_id")
-            tag_placeholders = ",".join(["?"] * len(tags))
-            conditions.append(f"t.name IN ({tag_placeholders})")
+            placeholders = ",".join(["?"] * len(tags))
+            conditions.append(f"t.name IN ({placeholders})")
             params.extend(tags)
 
         if keyword:
-            conditions.append("p.text LIKE ?")
-            params.append(f"%{keyword}%")
+            if include_response:
+                joins.append("LEFT JOIN Response r ON r.prompt_id = p.id")
+                conditions.append("(p.text LIKE ? OR r.content_plaintext LIKE ?)")
+                params.extend([f"%{keyword}%", f"%{keyword}%"])
+            else:
+                conditions.append("p.text LIKE ?")
+                params.append(f"%{keyword}%")
 
         if start_date and end_date:
             conditions.append("p.created_at BETWEEN ? AND ?")
-            params.append(start_date)
-            params.append(end_date)
+            params.extend([start_date, end_date])
 
         if joins:
             sql += " " + " ".join(joins)
