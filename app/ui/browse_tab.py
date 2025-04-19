@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 from app.db.db_manager import DBManager
+from app.services.model_registry import ModelRegistry
 
 class BrowseTab(QWidget):
     def __init__(self, base_path="prompts"):
@@ -17,6 +18,7 @@ class BrowseTab(QWidget):
         self.base_path = base_path
         self.selected_folder = None
         self.db = DBManager()
+        self.registry = ModelRegistry()
         self.init_ui()
         self.load_tags()
         self.load_prompt_folders()
@@ -34,10 +36,14 @@ class BrowseTab(QWidget):
         self.model_filter = QComboBox()
         self.model_filter.setEditable(True)
         self.model_filter.addItem("Any")
-        for model in self.db.get_all_models():
-            self.model_filter.addItem(model["name"])
+        self.refresh_model_filter()
         filter_layout.addWidget(QLabel("Model:"))
         filter_layout.addWidget(self.model_filter)
+
+        self.model_refresh_button = QPushButton("↻")
+        self.model_refresh_button.setToolTip("Refresh model list")
+        self.model_refresh_button.clicked.connect(self.refresh_and_reload_model_filter)
+        filter_layout.addWidget(self.model_refresh_button)
 
         self.apply_button = QPushButton("Apply Filters")
         self.apply_button.clicked.connect(self.apply_filters)
@@ -252,3 +258,13 @@ class BrowseTab(QWidget):
             self.response_display.clear()
             self.preview_browser.clear()
             QMessageBox.information(self, "Deleted", f"Entry '{folder_name}' deleted.")
+
+    def refresh_model_filter(self):
+        self.model_filter.clear()
+        self.model_filter.addItem("Any")
+        models = self.registry.load_models()
+        self.model_filter.addItems(sorted(models))
+
+    def refresh_and_reload_model_filter(self):
+        self.registry.refresh_registry()
+        self.refresh_model_filter()
