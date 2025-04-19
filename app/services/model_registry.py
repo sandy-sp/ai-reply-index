@@ -1,11 +1,23 @@
 import os
 import json
+from huggingface_hub import HfApi
+from app.db.db_manager import DBManager
 
 class ModelRegistry:
     def __init__(self):
         self.registry_path = os.path.join("data", "model_tags.json")
         os.makedirs("data", exist_ok=True)
         self._ensure_file()
+        self.db = DBManager()
+        self.api = HfApi()
+
+        self.COMMERCIAL_MODELS = [
+            {"name": "ChatGPT", "provider": "OpenAI"},
+            {"name": "Claude", "provider": "Anthropic"},
+            {"name": "Gemini", "provider": "Google"},
+            {"name": "Mistral", "provider": "Mistral.ai"},
+            {"name": "Groq", "provider": "Groq"}
+        ]
 
     def _ensure_file(self):
         if not os.path.exists(self.registry_path):
@@ -38,3 +50,22 @@ class ModelRegistry:
             if tag not in registry["tags"]:
                 registry["tags"].append(tag)
         self.save_registry(registry)
+
+    def preload_commercial_models(self):
+        for entry in self.COMMERCIAL_MODELS:
+            name = entry["name"]
+            self.save_model(name)
+            self.db.get_or_create_model(name)
+
+    def fetch_huggingface_models(self, limit=50):
+        hf_models = self.api.list_models(filter="text-generation", sort="downloads", limit=limit)
+        for model in hf_models:
+            name = model.modelId
+            if name:
+                self.save_model(name)
+                self.db.get_or_create_model(name)
+
+    def refresh_registry(self):
+        self.preload_commercial_models()
+        self.fetch_huggingface_models()
+        print("✅ Model registry updated from commercial and Hugging Face sources.")
