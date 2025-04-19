@@ -135,7 +135,7 @@ Stored in `data/config.json`:
 
 ### 🔄 Workflow
 
-![](workflow.png)
+![](assets/workflow.png)
 
 This decoupling ensures that:
 - Business logic is isolated and testable
