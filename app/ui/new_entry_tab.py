@@ -7,12 +7,14 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 from app.db.db_manager import DBManager
+from app.services.model_registry import ModelRegistry
 
 class NewEntryTab(QWidget):
     def __init__(self, base_path="prompts"):
         super().__init__()
         self.base_path = base_path
         self.db = DBManager()
+        self.registry = ModelRegistry()
         self.init_ui()
 
     def init_ui(self):
@@ -27,9 +29,13 @@ class NewEntryTab(QWidget):
 
         self.model_selector = QComboBox()
         self.model_selector.setEditable(True)
-        self.model_selector.addItems([m["name"] for m in self.db.get_all_models()])
+        self.refresh_model_list()
         layout.addWidget(QLabel("Model:"))
         layout.addWidget(self.model_selector)
+
+        self.refresh_button = QPushButton("Refresh Models")
+        self.refresh_button.clicked.connect(self.refresh_and_reload_models)
+        layout.addWidget(self.refresh_button)
 
         self.response_input = QTextEdit()
         self.response_input.setPlaceholderText("Paste the model's response here")
@@ -55,6 +61,16 @@ class NewEntryTab(QWidget):
         layout.addWidget(self.save_button)
 
         self.setLayout(layout)
+
+    def refresh_model_list(self):
+        self.model_selector.clear()
+        models = self.registry.load_models()
+        self.model_selector.addItems(sorted(models))
+
+    def refresh_and_reload_models(self):
+        self.registry.refresh_registry()
+        self.refresh_model_list()
+        QMessageBox.information(self, "Models Updated", "Model list refreshed from external sources.")
 
     def save_entry(self):
         prompt = self.prompt_input.toPlainText().strip()
