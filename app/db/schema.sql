@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS Prompt (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    text TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    tags TEXT
+);
+
+CREATE TABLE IF NOT EXISTS Model (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS Response (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    prompt_id INTEGER NOT NULL,
+    model_id INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (prompt_id) REFERENCES Prompt(id),
+    FOREIGN KEY (model_id) REFERENCES Model(id)
+);
