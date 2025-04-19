@@ -6,14 +6,13 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QComboBox, QCheckBox, QMessageBox
 )
 from PyQt5.QtCore import Qt
-from services.model_registry import ModelRegistry
-from services.file_manager import FileManager
+from app.db.db_manager import DBManager
 
 class NewEntryTab(QWidget):
     def __init__(self, base_path="prompts"):
         super().__init__()
         self.base_path = base_path
-        self.registry = ModelRegistry()
+        self.db = DBManager()
         self.init_ui()
 
     def init_ui(self):
@@ -28,7 +27,7 @@ class NewEntryTab(QWidget):
 
         self.model_selector = QComboBox()
         self.model_selector.setEditable(True)
-        self.model_selector.addItems(self.registry.load_models())
+        self.model_selector.addItems([m["name"] for m in self.db.get_all_models()])
         layout.addWidget(QLabel("Model:"))
         layout.addWidget(self.model_selector)
 
@@ -73,14 +72,28 @@ class NewEntryTab(QWidget):
 
         os.makedirs(folder_name, exist_ok=True)
 
-        file_manager = FileManager(folder_name)
         if self.use_markdown.isChecked():
-            file_manager.save_markdown(prompt, model, response)
-        if self.use_json.isChecked():
-            file_manager.save_json(prompt, model, response, tags, today)
+            prompt_md = f"# Prompt\n\n{prompt}\n"
+            response_md = f"# Response from {model}\n\n{response}\n"
+            with open(os.path.join(folder_name, "prompt.md"), 'w', encoding='utf-8') as f:
+                f.write(prompt_md)
+            with open(os.path.join(folder_name, f"{model}.md"), 'w', encoding='utf-8') as f:
+                f.write(response_md)
 
-        self.registry.save_model(model)
-        self.registry.save_tags(tags)
+        if self.use_json.isChecked():
+            data = {
+                "prompt": prompt,
+                "model": model,
+                "response": response,
+                "tags": tags,
+                "date": today
+            }
+            with open(os.path.join(folder_name, "metadata.json"), 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2)
+
+        # Save to database
+        prompt_id = self.db.add_prompt(prompt, tags)
+        self.db.add_response(prompt_id, model, response)
 
         QMessageBox.information(self, "Success", f"Entry saved to {folder_name}")
         self.prompt_input.clear()
