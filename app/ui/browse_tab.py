@@ -1,13 +1,14 @@
 import os
 import shutil
+import json
 import markdown2
 from datetime import datetime
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QTextEdit, QVBoxLayout, QHBoxLayout, QPushButton,
     QListWidget, QListWidgetItem, QMessageBox, QTabWidget, QTextBrowser,
-    QLineEdit, QComboBox, QDateEdit
+    QLineEdit, QComboBox, QDateEdit, QScrollArea, QFrame
 )
-from PyQt5.QtCore import QDate
+from PyQt5.QtCore import QDate, Qt
 from app.db.db_manager import DBManager
 
 class BrowseTab(QWidget):
@@ -101,6 +102,19 @@ class BrowseTab(QWidget):
         self.preview_tab.setLayout(preview_layout)
         self.entry_tabs.addTab(self.preview_tab, "Preview")
 
+        # Comparison Tab
+        self.compare_tab = QWidget()
+        compare_layout = QVBoxLayout()
+        self.compare_area = QScrollArea()
+        self.compare_area.setWidgetResizable(True)
+        self.compare_content = QFrame()
+        self.compare_layout = QHBoxLayout()
+        self.compare_content.setLayout(self.compare_layout)
+        self.compare_area.setWidget(self.compare_content)
+        compare_layout.addWidget(self.compare_area)
+        self.compare_tab.setLayout(compare_layout)
+        self.entry_tabs.addTab(self.compare_tab, "Compare")
+
         right_layout.addWidget(self.entry_tabs)
         content_layout.addLayout(right_layout, 5)
 
@@ -118,6 +132,7 @@ class BrowseTab(QWidget):
                 if os.path.exists(folder_path):
                     item = QListWidgetItem(folder_slug)
                     item.setData(1000, folder_path)
+                    item.setData(1001, prompt["id"])
                     self.folder_list.addItem(item)
         else:
             if not os.path.exists(self.base_path):
@@ -151,7 +166,9 @@ class BrowseTab(QWidget):
 
     def load_entry_data(self, item):
         folder_path = item.data(1000)
+        prompt_id = item.data(1001)
         self.selected_folder = folder_path
+
         metadata_path = os.path.join(folder_path, "metadata.json")
         if not os.path.exists(metadata_path):
             return
@@ -165,6 +182,22 @@ class BrowseTab(QWidget):
         markdown_text = f"# Prompt\n\n{data.get('prompt', '')}\n\n# Response\n\n{data.get('response', '')}"
         html = markdown2.markdown(markdown_text)
         self.preview_browser.setHtml(html)
+
+        # Load model comparisons
+        self.compare_layout.setAlignment(Qt.AlignLeft)
+        while self.compare_layout.count():
+            widget = self.compare_layout.takeAt(0).widget()
+            if widget:
+                widget.setParent(None)
+
+        if prompt_id:
+            comparisons = self.db.get_model_responses(prompt_id)
+            for resp in comparisons:
+                section = QTextBrowser()
+                section.setMinimumWidth(300)
+                text = f"<h3>{resp['model']}</h3><p><i>{resp['created_at']}</i></p><hr><p>{resp['content']}</p>"
+                section.setHtml(text)
+                self.compare_layout.addWidget(section)
 
     def save_updates(self):
         if not self.selected_folder:
