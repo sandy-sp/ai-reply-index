@@ -1,5 +1,7 @@
 import os
 import sqlite3
+import markdown2
+import re
 from datetime import datetime
 
 class DBManager:
@@ -36,11 +38,18 @@ class DBManager:
         self.conn.commit()
         return cur.lastrowid
 
+    def markdown_to_plain(self, md_text):
+        html = markdown2.markdown(md_text)
+        text = re.sub(r'<[^>]+>', '', html)
+        return text.strip()
+
     def add_response(self, prompt_id, model_name, content):
         model_id = self.get_or_create_model(model_name)
+        content_html = markdown2.markdown(content)
+        content_plain = self.markdown_to_plain(content)
         self.conn.execute(
-            "INSERT INTO Response (prompt_id, model_id, content, created_at) VALUES (?, ?, ?, ?)",
-            (prompt_id, model_id, content, datetime.now().isoformat())
+            "INSERT INTO Response (prompt_id, model_id, content, content_html, content_plaintext, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+            (prompt_id, model_id, content, content_html, content_plain, datetime.now().isoformat())
         )
         self.conn.commit()
 
