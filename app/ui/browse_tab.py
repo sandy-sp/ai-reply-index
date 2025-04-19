@@ -8,15 +8,15 @@ from PyQt5.QtWidgets import (
     QLineEdit, QComboBox, QScrollArea, QFrame, QSplitter, QCheckBox
 )
 from PyQt5.QtCore import Qt
-from app.db.db_manager import DBManager
 from app.services.model_registry import ModelRegistry
+from app.services.prompt_service import PromptService
 
 class BrowseTab(QWidget):
     def __init__(self, base_path="prompts"):
         super().__init__()
         self.base_path = base_path
         self.selected_folder = None
-        self.db = DBManager()
+        self.prompt_service = PromptService()
         self.registry = ModelRegistry()
         self.init_ui()
         self.load_tags()
@@ -131,15 +131,14 @@ class BrowseTab(QWidget):
 
     def load_tags(self):
         self.tag_list.clear()
-        for row in self.db.get_all_tags():
-            tag = row["name"]
+        for tag in self.prompt_service.get_all_tags():
             item = QListWidgetItem(tag)
             item.setData(Qt.UserRole, tag)
             self.tag_list.addItem(item)
 
     def filter_by_tag(self, item):
         tag = item.data(Qt.UserRole)
-        results = self.db.search_prompts(tags=[tag])
+        results = self.prompt_service.search_prompts(tags=[tag])
         self.load_prompt_folders(filtered_prompts=results)
 
     def load_prompt_folders(self, filtered_prompts=None):
@@ -168,7 +167,7 @@ class BrowseTab(QWidget):
                                 meta = json.load(f)
                                 prompt_text = meta.get("prompt")
                                 if prompt_text:
-                                    result = self.db.search_prompts(keyword=prompt_text)
+                                    result = self.prompt_service.search_prompts(keyword=prompt_text)
                                     if result:
                                         item.setData(1001, result[0]["id"])
                             except Exception:
@@ -182,11 +181,11 @@ class BrowseTab(QWidget):
         if model == "Any":
             model = None
         include_response = self.include_response_check.isChecked()
-        results = self.db.search_prompts(
+
+        results = self.prompt_service.search_prompts(
             keyword=keyword,
             tags=tags,
-            start_date=None,
-            end_date=None,
+            model=model,
             include_response=include_response
         )
         self.load_prompt_folders(filtered_prompts=results)
@@ -220,7 +219,7 @@ class BrowseTab(QWidget):
             QMessageBox.warning(self, "Compare Disabled", "No prompt ID found for this entry.")
             return
 
-        comparisons = self.db.get_model_responses(prompt_id)
+        comparisons = self.prompt_service.get_comparison_responses(prompt_id)
         for resp in comparisons:
             section = QTextBrowser()
             section.setMinimumWidth(300)
