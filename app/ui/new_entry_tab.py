@@ -91,7 +91,6 @@ class NewEntryTab(QWidget):
             with open(os.path.join(folder_name, "metadata.json"), 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2)
 
-        # Save to database
         prompt_id = self.db.add_prompt(prompt, tags)
         self.db.add_response(prompt_id, model, response)
 
