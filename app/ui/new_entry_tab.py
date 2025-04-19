@@ -9,7 +9,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, QMimeData
 from PyQt5.QtGui import QDropEvent
-from app.db.db_manager import DBManager
+# from app.db.db_manager import DBManager
+from app.services.prompt_service import PromptService
 from app.services.model_registry import ModelRegistry
 import html2text
 import pypandoc
@@ -68,7 +69,7 @@ class NewEntryTab(QWidget):
     def __init__(self, base_path="prompts"):
         super().__init__()
         self.base_path = base_path
-        self.db = DBManager()
+        self.prompt_service = PromptService()
         self.registry = ModelRegistry()
         self.init_ui()
 
@@ -168,8 +169,8 @@ class NewEntryTab(QWidget):
             with open(os.path.join(folder_name, "metadata.json"), 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2)
 
-        prompt_id = self.db.add_prompt(prompt, tags)
-        self.db.add_response(prompt_id, model, response)
+        # Refactored to use PromptService
+        self.prompt_service.create_prompt(prompt, response, model, tags)
 
         QMessageBox.information(self, "Success", f"Entry saved to {folder_name}")
         self.prompt_input.clear()
