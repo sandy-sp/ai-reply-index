@@ -52,6 +52,47 @@ class DBManager:
             WHERE r.prompt_id = ?
             ORDER BY r.created_at
         """, (prompt_id,)).fetchall()
+    
+    # Add inside DBManager class
+
+    def search_prompts(self, keyword=None, tags=None, start_date=None, end_date=None):
+        sql = "SELECT * FROM Prompt WHERE 1=1"
+        params = []
+
+        if keyword:
+            sql += " AND text LIKE ?"
+            params.append(f"%{keyword}%")
+
+        if tags:
+            for tag in tags:
+                sql += " AND tags LIKE ?"
+                params.append(f"%{tag}%")
+
+        if start_date and end_date:
+            sql += " AND created_at BETWEEN ? AND ?"
+            params.append(start_date)
+            params.append(end_date)
+
+        sql += " ORDER BY created_at DESC"
+        return self.conn.execute(sql, params).fetchall()
+
+    def get_prompt_by_id(self, prompt_id):
+        return self.conn.execute("SELECT * FROM Prompt WHERE id = ?", (prompt_id,)).fetchone()
+
+    def get_model_responses(self, prompt_id):
+        return self.conn.execute("""
+            SELECT m.name AS model, r.content, r.created_at
+            FROM Response r
+            JOIN Model m ON r.model_id = m.id
+            WHERE r.prompt_id = ?
+            ORDER BY r.created_at
+        """, (prompt_id,)).fetchall()
+
+    def get_all_tags(self):
+        return self.conn.execute("SELECT tags FROM Prompt").fetchall()
+
+    def get_all_models(self):
+        return self.conn.execute("SELECT name FROM Model").fetchall()
 
     def close(self):
         self.conn.close()
