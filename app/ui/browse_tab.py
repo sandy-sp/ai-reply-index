@@ -6,7 +6,7 @@ from datetime import datetime
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QTextEdit, QVBoxLayout, QHBoxLayout, QPushButton,
     QListWidget, QListWidgetItem, QMessageBox, QTabWidget, QTextBrowser,
-    QLineEdit, QComboBox, QDateEdit, QScrollArea, QFrame
+    QLineEdit, QComboBox, QDateEdit, QScrollArea, QFrame, QSplitter
 )
 from PyQt5.QtCore import QDate, Qt
 from app.db.db_manager import DBManager
@@ -18,6 +18,7 @@ class BrowseTab(QWidget):
         self.selected_folder = None
         self.db = DBManager()
         self.init_ui()
+        self.load_tags()
         self.load_prompt_folders()
 
     def init_ui(self):
@@ -25,28 +26,10 @@ class BrowseTab(QWidget):
 
         # === Filter Panel ===
         filter_layout = QHBoxLayout()
-
         self.keyword_input = QLineEdit()
         self.keyword_input.setPlaceholderText("Search by keyword")
         filter_layout.addWidget(QLabel("Keyword:"))
         filter_layout.addWidget(self.keyword_input)
-
-        self.tag_input = QLineEdit()
-        self.tag_input.setPlaceholderText("Comma-separated tags")
-        filter_layout.addWidget(QLabel("Tags:"))
-        filter_layout.addWidget(self.tag_input)
-
-        self.start_date = QDateEdit()
-        self.start_date.setCalendarPopup(True)
-        self.start_date.setDate(QDate.currentDate().addMonths(-1))
-        filter_layout.addWidget(QLabel("From:"))
-        filter_layout.addWidget(self.start_date)
-
-        self.end_date = QDateEdit()
-        self.end_date.setCalendarPopup(True)
-        self.end_date.setDate(QDate.currentDate())
-        filter_layout.addWidget(QLabel("To:"))
-        filter_layout.addWidget(self.end_date)
 
         self.model_filter = QComboBox()
         self.model_filter.setEditable(True)
@@ -62,12 +45,17 @@ class BrowseTab(QWidget):
 
         main_layout.addLayout(filter_layout)
 
-        # === Main Panel ===
-        content_layout = QHBoxLayout()
+        # === Splitter: Tag List + Content ===
+        splitter = QSplitter(Qt.Horizontal)
+
+        self.tag_list = QListWidget()
+        self.tag_list.itemClicked.connect(self.filter_by_tag)
+        splitter.addWidget(self.tag_list)
 
         self.folder_list = QListWidget()
         self.folder_list.itemClicked.connect(self.load_entry_data)
-        content_layout.addWidget(self.folder_list, 2)
+        splitter.addWidget(self.folder_list)
+        splitter.setSizes([100, 300])
 
         right_layout = QVBoxLayout()
         self.entry_tabs = QTabWidget()
@@ -102,7 +90,7 @@ class BrowseTab(QWidget):
         self.preview_tab.setLayout(preview_layout)
         self.entry_tabs.addTab(self.preview_tab, "Preview")
 
-        # Comparison Tab
+        # Compare Tab
         self.compare_tab = QWidget()
         compare_layout = QVBoxLayout()
         self.compare_area = QScrollArea()
@@ -116,15 +104,28 @@ class BrowseTab(QWidget):
         self.entry_tabs.addTab(self.compare_tab, "Compare")
 
         right_layout.addWidget(self.entry_tabs)
-        content_layout.addLayout(right_layout, 5)
+        right_container = QWidget()
+        right_container.setLayout(right_layout)
+        splitter.addWidget(right_container)
 
-        main_layout.addLayout(content_layout)
+        main_layout.addWidget(splitter)
         self.setLayout(main_layout)
+
+    def load_tags(self):
+        self.tag_list.clear()
+        for row in self.db.get_all_tags():
+            tag = row["name"]
+            item = QListWidgetItem(tag)
+            item.setData(Qt.UserRole, tag)
+            self.tag_list.addItem(item)
+
+    def filter_by_tag(self, item):
+        tag = item.data(Qt.UserRole)
+        results = self.db.search_prompts(tags=[tag])
+        self.load_prompt_folders(filtered_prompts=results)
 
     def load_prompt_folders(self, filtered_prompts=None):
         self.folder_list.clear()
-        folders = []
-
         if filtered_prompts:
             for prompt in filtered_prompts:
                 folder_slug = prompt["created_at"].split("T")[0] + "_" + "_".join(prompt["text"][:40].lower().split())
@@ -146,22 +147,16 @@ class BrowseTab(QWidget):
 
     def apply_filters(self):
         keyword = self.keyword_input.text().strip() or None
-        tags = [t.strip() for t in self.tag_input.text().split(",") if t.strip()]
-        tags = tags if tags else None
-        start_date = self.start_date.date().toString("yyyy-MM-dd")
-        end_date = self.end_date.date().toString("yyyy-MM-dd")
-
+        tags = None
         model = self.model_filter.currentText()
         if model == "Any":
             model = None
-
         results = self.db.search_prompts(
             keyword=keyword,
             tags=tags,
-            start_date=start_date,
-            end_date=end_date
+            start_date=None,
+            end_date=None
         )
-
         self.load_prompt_folders(filtered_prompts=results)
 
     def load_entry_data(self, item):
@@ -183,7 +178,6 @@ class BrowseTab(QWidget):
         html = markdown2.markdown(markdown_text)
         self.preview_browser.setHtml(html)
 
-        # Load model comparisons
         self.compare_layout.setAlignment(Qt.AlignLeft)
         while self.compare_layout.count():
             widget = self.compare_layout.takeAt(0).widget()
