@@ -1,4 +1,4 @@
-# 🧠 AI Reply Index
+# 🧠 AI Reply Index App
 
 [![Python](https://img.shields.io/badge/Python-3.12+-blue?logo=python)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](./LICENSE)
@@ -7,7 +7,7 @@
 [![SQLite](https://img.shields.io/badge/Database-SQLite-blue?logo=sqlite)](https://sqlite.org/)
 [![Markdown2](https://img.shields.io/badge/Markdown-Markdown2-lightgrey?logo=markdown)](https://github.com/trentm/python-markdown2)
 
-**AI Reply Index** is a local-first desktop app that helps you **log, organize, and compare AI prompts and responses** across different models. Whether you're testing GPT-4 vs Claude or benchmarking multiple models for the same prompt, this tool makes it effortless — and GitHub-style clean.
+**AI Reply Index App** is a local-first desktop app that helps you **log, organize, and compare AI prompts and responses** across different models. Whether you're testing GPT-4 vs Claude or benchmarking multiple models for the same prompt, this tool makes it effortless — and GitHub-style clean.
 
 ---
 
@@ -17,7 +17,7 @@ This tool was born from a simple but powerful idea:
 
 > “What if we could store our prompts like code commits — with their responses, models, and metadata — and compare them neatly, locally, and version-style?”
 
-That’s exactly what **AI Reply Index** does:
+That’s exactly what **AI Reply Index App** does:
 - Record prompts and their responses
 - Track which model gave which answer
 - Organize them in clean folder structures or a database
