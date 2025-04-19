@@ -6,9 +6,9 @@ from datetime import datetime
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QTextEdit, QVBoxLayout, QHBoxLayout, QPushButton,
     QListWidget, QListWidgetItem, QMessageBox, QTabWidget, QTextBrowser,
-    QLineEdit, QComboBox, QDateEdit, QScrollArea, QFrame, QSplitter
+    QLineEdit, QComboBox, QScrollArea, QFrame, QSplitter
 )
-from PyQt5.QtCore import QDate, Qt
+from PyQt5.QtCore import Qt
 from app.db.db_manager import DBManager
 
 class BrowseTab(QWidget):
@@ -24,7 +24,7 @@ class BrowseTab(QWidget):
     def init_ui(self):
         main_layout = QVBoxLayout()
 
-        # === Filter Panel ===
+        # Filter Panel
         filter_layout = QHBoxLayout()
         self.keyword_input = QLineEdit()
         self.keyword_input.setPlaceholderText("Search by keyword")
@@ -45,7 +45,7 @@ class BrowseTab(QWidget):
 
         main_layout.addLayout(filter_layout)
 
-        # === Splitter: Tag List + Content ===
+        # Splitter for tag list and folder list/content
         splitter = QSplitter(Qt.Horizontal)
 
         self.tag_list = QListWidget()
@@ -66,7 +66,6 @@ class BrowseTab(QWidget):
         self.prompt_display = QTextEdit()
         edit_layout.addWidget(QLabel("Prompt:"))
         edit_layout.addWidget(self.prompt_display)
-
         self.response_display = QTextEdit()
         edit_layout.addWidget(QLabel("Response:"))
         edit_layout.addWidget(self.response_display)
@@ -143,6 +142,18 @@ class BrowseTab(QWidget):
                 if os.path.isdir(full_path):
                     item = QListWidgetItem(folder)
                     item.setData(1000, full_path)
+                    metadata_path = os.path.join(full_path, "metadata.json")
+                    if os.path.exists(metadata_path):
+                        with open(metadata_path, 'r', encoding='utf-8') as f:
+                            try:
+                                meta = json.load(f)
+                                prompt_text = meta.get("prompt")
+                                if prompt_text:
+                                    result = self.db.search_prompts(keyword=prompt_text)
+                                    if result:
+                                        item.setData(1001, result[0]["id"])
+                            except Exception:
+                                pass
                     self.folder_list.addItem(item)
 
     def apply_filters(self):
@@ -184,14 +195,18 @@ class BrowseTab(QWidget):
             if widget:
                 widget.setParent(None)
 
-        if prompt_id:
-            comparisons = self.db.get_model_responses(prompt_id)
-            for resp in comparisons:
-                section = QTextBrowser()
-                section.setMinimumWidth(300)
-                text = f"<h3>{resp['model']}</h3><p><i>{resp['created_at']}</i></p><hr><p>{resp['content']}</p>"
-                section.setHtml(text)
-                self.compare_layout.addWidget(section)
+        if not prompt_id:
+            QMessageBox.warning(self, "Compare Disabled", "No prompt ID found for this entry.")
+            return
+
+        comparisons = self.db.get_model_responses(prompt_id)
+        for resp in comparisons:
+            section = QTextBrowser()
+            section.setMinimumWidth(300)
+            section.setStyleSheet("border: 1px solid #aaa; padding: 10px; margin: 10px;")
+            text = f"<h3>{resp['model']}</h3><p><i>{resp['created_at']}</i></p><hr><p>{resp['content']}</p>"
+            section.setHtml(text)
+            self.compare_layout.addWidget(section)
 
     def save_updates(self):
         if not self.selected_folder:
