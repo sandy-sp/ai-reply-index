@@ -7,7 +7,8 @@ from PyQt5.QtWidgets import (
     QWidget, QLabel, QTextEdit, QLineEdit, QPushButton,
     QVBoxLayout, QHBoxLayout, QComboBox, QCheckBox, QMessageBox
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QMimeData
+from PyQt5.QtGui import QDropEvent
 from app.db.db_manager import DBManager
 from app.services.model_registry import ModelRegistry
 import html2text
@@ -15,6 +16,10 @@ import pypandoc
 from docx2md import do_convert
 
 class MarkdownTextEdit(QTextEdit):
+    def __init__(self):
+        super().__init__()
+        self.setAcceptDrops(True)
+
     def insertFromMimeData(self, source):
         if source.hasHtml():
             html = source.html()
@@ -35,6 +40,28 @@ class MarkdownTextEdit(QTextEdit):
                 super().insertFromMimeData(source)
         else:
             super().insertFromMimeData(source)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            for url in event.mimeData().urls():
+                if url.toLocalFile().endswith(".docx"):
+                    event.acceptProposedAction()
+                    return
+        super().dragEnterEvent(event)
+
+    def dropEvent(self, event: QDropEvent):
+        if event.mimeData().hasUrls():
+            for url in event.mimeData().urls():
+                file_path = url.toLocalFile()
+                if file_path.endswith(".docx"):
+                    try:
+                        markdown = pypandoc.convert_file(file_path, 'gfm')
+                    except Exception:
+                        markdown = do_convert(file_path, use_md_table=True)
+                    self.insertPlainText(markdown)
+                    event.acceptProposedAction()
+                    return
+        super().dropEvent(event)
 
 class NewEntryTab(QWidget):
     def __init__(self, base_path="prompts"):
