@@ -5,7 +5,7 @@ import markdown2
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QTextEdit, QVBoxLayout, QHBoxLayout, QPushButton,
     QListWidget, QListWidgetItem, QMessageBox, QTabWidget, QTextBrowser,
-    QLineEdit, QComboBox, QScrollArea, QFrame, QSplitter
+    QLineEdit, QComboBox, QScrollArea, QFrame, QSplitter, QCheckBox
 )
 from PyQt5.QtCore import Qt
 from app.db.db_manager import DBManager
@@ -38,6 +38,9 @@ class BrowseTab(QWidget):
         self.refresh_model_filter()
         filter_layout.addWidget(QLabel("Model:"))
         filter_layout.addWidget(self.model_filter)
+
+        self.include_response_check = QCheckBox("Search in responses")
+        filter_layout.addWidget(self.include_response_check)
 
         self.model_refresh_button = QPushButton("↻")
         self.model_refresh_button.setToolTip("Refresh model list")
@@ -167,11 +170,13 @@ class BrowseTab(QWidget):
         model = self.model_filter.currentText()
         if model == "Any":
             model = None
+        include_response = self.include_response_check.isChecked()
         results = self.db.search_prompts(
             keyword=keyword,
             tags=tags,
             start_date=None,
-            end_date=None
+            end_date=None,
+            include_response=include_response
         )
         self.load_prompt_folders(filtered_prompts=results)
 
