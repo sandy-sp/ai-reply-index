@@ -33,6 +33,7 @@ class BrowseTab(QWidget):
         filter_layout.addWidget(self.keyword_input)
 
         self.model_filter = QComboBox()
+        self.model_filter.setMinimumWidth(200)
         self.model_filter.setEditable(True)
         self.model_filter.addItem("Any")
         self.refresh_model_filter()
@@ -56,14 +57,24 @@ class BrowseTab(QWidget):
         # Splitter for tag list and folder list/content
         splitter = QSplitter(Qt.Horizontal)
 
+        tag_and_folder_layout = QVBoxLayout()
+        tag_container = QWidget()
+        tag_list_layout = QVBoxLayout()
+        tag_list_layout.addWidget(QLabel("Tags:"))
         self.tag_list = QListWidget()
         self.tag_list.itemClicked.connect(self.filter_by_tag)
-        splitter.addWidget(self.tag_list)
+        tag_list_layout.addWidget(self.tag_list)
+        tag_container.setLayout(tag_list_layout)
 
+        tag_and_folder_layout.addWidget(tag_container)
+        tag_and_folder_layout.addWidget(QLabel("Prompts:"))
         self.folder_list = QListWidget()
         self.folder_list.itemClicked.connect(self.load_entry_data)
-        splitter.addWidget(self.folder_list)
-        splitter.setSizes([100, 300])
+        tag_and_folder_layout.addWidget(self.folder_list)
+
+        tag_folder_widget = QWidget()
+        tag_folder_widget.setLayout(tag_and_folder_layout)
+        splitter.addWidget(tag_folder_widget)
 
         right_layout = QVBoxLayout()
         self.entry_tabs = QTabWidget()
@@ -214,7 +225,7 @@ class BrowseTab(QWidget):
             section = QTextBrowser()
             section.setMinimumWidth(300)
             section.setStyleSheet("border: 1px solid #aaa; padding: 10px; margin: 10px;")
-            text = f"<h3>{resp['model']}</h3><p><i>{resp['created_at']}</i></p><hr><p>{resp['content']}</p>"
+            text = f"<h3>{resp['model']}</h3><p><i>{resp['created_at']}</i></p><hr><pre>{resp['content']}</pre>"
             section.setHtml(text)
             self.compare_layout.addWidget(section)
 
