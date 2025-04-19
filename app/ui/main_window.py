@@ -35,7 +35,6 @@ class MainWindow(QMainWindow):
 
     def init_menu(self):
         menubar = self.menuBar()
-
         settings_menu = menubar.addMenu("Settings")
 
         theme_toggle = QAction("Toggle Dark Mode", self)
