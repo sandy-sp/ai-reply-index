@@ -39,3 +39,9 @@ class ConfigManager:
         config = self.load_config()
         config["save_path"] = path
         self.save_config(config)
+
+    def use_database(self):
+        return self.load_config().get("use_database", False)
+
+    def get_database_path(self):
+        return self.load_config().get("database_path", "data/prompt_index.db")
