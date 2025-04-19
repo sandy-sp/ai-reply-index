@@ -135,16 +135,7 @@ Stored in `data/config.json`:
 
 ### 🔄 Workflow
 
-```mermaid
-graph TD
-    UI[PyQt5 GUI Tabs] --> PromptService
-    UI --> ModelService
-    UI --> ExportService
-
-    PromptService --> DB[SQLite (Prompt, Response, Tag, Model)]
-    ModelService --> DB
-    ExportService --> FS[Markdown/HTML Filesystem]
-```
+![](workflow.png)
 
 This decoupling ensures that:
 - Business logic is isolated and testable
