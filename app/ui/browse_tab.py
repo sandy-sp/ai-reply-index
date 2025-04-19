@@ -2,7 +2,6 @@ import os
 import shutil
 import json
 import markdown2
-from datetime import datetime
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QTextEdit, QVBoxLayout, QHBoxLayout, QPushButton,
     QListWidget, QListWidgetItem, QMessageBox, QTabWidget, QTextBrowser,
