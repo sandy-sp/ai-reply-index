@@ -1,8 +1,11 @@
 # 🧠 AI Reply Index
 
 [![Python](https://img.shields.io/badge/Python-3.12+-blue?logo=python)](https://www.python.org/)
-[![PyQt5](https://img.shields.io/badge/GUI-PyQt5-green?logo=qt)](https://riverbankcomputing.com/software/pyqt/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](./LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.12+-blue?logo=python)](https://www.python.org/)
+[![PyQt5](https://img.shields.io/badge/GUI-PyQt5-green?logo=qt)](https://riverbankcomputing.com/software/pyqt/)
+[![SQLite](https://img.shields.io/badge/Database-SQLite-blue?logo=sqlite)](https://sqlite.org/)
+[![Markdown2](https://img.shields.io/badge/Markdown-Markdown2-lightgrey?logo=markdown)](https://github.com/trentm/python-markdown2)
 
 **AI Reply Index** is a local-first desktop app that helps you **log, organize, and compare AI prompts and responses** across different models. Whether you're testing GPT-4 vs Claude or benchmarking multiple models for the same prompt, this tool makes it effortless — and GitHub-style clean.
 
@@ -130,12 +133,23 @@ Stored in `data/config.json`:
 
 ---
 
-## 🛠 Tech Stack
+### 🔄 Workflow
 
-- [Python 3.12](https://www.python.org/)
-- [PyQt5](https://riverbankcomputing.com/software/pyqt/)
-- [SQLite](https://sqlite.org/)
-- [Markdown2](https://github.com/trentm/python-markdown2)
+```mermaid
+graph TD
+    UI[PyQt5 GUI Tabs] --> PromptService
+    UI --> ModelService
+    UI --> ExportService
+
+    PromptService --> DB[SQLite (Prompt, Response, Tag, Model)]
+    ModelService --> DB
+    ExportService --> FS[Markdown/HTML Filesystem]
+```
+
+This decoupling ensures that:
+- Business logic is isolated and testable
+- UI remains lightweight and responsive
+- Adding new features like autosync or cloud export becomes easier
 
 ---
 
@@ -148,7 +162,3 @@ MIT © [@sandy-sp](https://github.com/sandy-sp) — free to use, modify, and dis
 ## 🙌 Acknowledgements
 
 Built with ❤️ to make AI prompt testing and logging more structured, efficient, and beautiful.
-
-```
-
----
