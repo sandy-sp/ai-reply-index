@@ -1,135 +1,91 @@
 # 🧠 AI Reply Index App
 
 [![Python](https://img.shields.io/badge/Python-3.12+-blue?logo=python)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](./LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.12+-blue?logo=python)](https://www.python.org/)
 [![PyQt5](https://img.shields.io/badge/GUI-PyQt5-green?logo=qt)](https://riverbankcomputing.com/software/pyqt/)
-[![SQLite](https://img.shields.io/badge/Database-SQLite-blue?logo=sqlite)](https://sqlite.org/)
-[![Markdown2](https://img.shields.io/badge/Markdown-Markdown2-lightgrey?logo=markdown)](https://github.com/trentm/python-markdown2)
-
-**AI Reply Index App** is a local-first desktop app that helps you **log, organize, and compare AI prompts and responses** across different models. Whether you're testing GPT-4 vs Claude or benchmarking multiple models for the same prompt, this tool makes it effortless — and GitHub-style clean.
+[![SQLite](https://img.shields.io/badge/Database-SQLite-lightgrey?logo=sqlite)](https://www.sqlite.org/index.html)
+[![Markdown](https://img.shields.io/badge/Format-Markdown-blue?logo=markdown)](https://daringfireball.net/projects/markdown/)
 
 ---
 
-## 🚀 Purpose
+## 🚀 About the App
 
-This tool was born from a simple but powerful idea:
+This is the **AI Reply Index desktop application**, a local GUI tool built with PyQt5 that helps you record, organize, and manage prompt-response interactions with AI models like ChatGPT, Claude, Gemini, and open-source LLMs.
 
-> “What if we could store our prompts like code commits — with their responses, models, and metadata — and compare them neatly, locally, and version-style?”
-
-That’s exactly what **AI Reply Index App** does:
-- Record prompts and their responses
-- Track which model gave which answer
-- Organize them in clean folder structures or a database
-- Compare them side-by-side
-- Export as Markdown, JSON, or full HTML site
+It's the companion tool for the main [`ai-reply-index`](../README.md) repository — designed to streamline contributions and keep formatting consistent.
 
 ---
 
-## ✨ Features
+## 📦 Features
 
-- 📝 Add new prompt + model response
-- 📂 Organize by folders, tags, and metadata
-- 🧠 Compare responses from multiple models
-- 🎨 Dark mode & theming
-- 🔍 Keyword, tag, and model-based search
-- 🗃️ SQLite-powered filtering (optional)
-- 📦 Static HTML export (`dist/index.html`)
-- ✅ Works offline, no cloud dependency
-
----
-
-## 🖼 Example
-
-Prompt folder structure:
-
-```
-prompts/
-└── 2025_hello_world_prompt/
-    ├── metadata.json
-    ├── prompt.md
-    └── gpt4.md
-```
-
-Sample metadata:
-
-```json
-{
-  "prompt": "Explain recursion to a 10-year-old.",
-  "model": "gpt-4",
-  "response": "Imagine looking into a mirror...",
-  "tags": ["explanation", "beginner", "recursion"],
-  "date": "2025-04-17"
-}
-```
-
-Multiple models? No problem:
-
-```
-2025_hello_world_prompt/
-├── prompt.md
-├── gpt4.md
-├── claude.md
-├── llama3.md
-```
+- 📝 Create prompt-response entries with a clean editor
+- 🧠 Compare different model outputs side-by-side
+- 📂 Categorize prompts with tags and folders
+- 🧲 Automatically fetch and cache model registries (Hugging Face, Open Source)
+- 🧾 Full metadata capture (timestamp, model, tags)
+- 📄 Auto-converts DOCX input to Markdown
+- 🔍 Full-text search across stored responses
+- 🌐 Export prompt sets to static HTML site
 
 ---
 
-## 📦 Installation
+## 🛠️ Installation
 
+### Using Poetry
 ```bash
-git clone https://github.com/sandy-sp/ai-reply-index.git
-cd ai-reply-index
-
-# With poetry
 poetry install
-
-# Or with pip
-pip install -r requirements.txt
+poetry run python app/main.py
 ```
 
 ---
 
-## ▶️ How to Use
+## 🧪 App Architecture
 
-```bash
-python app/main.py
-```
-
-- Use the **New Entry** tab to add a prompt + response
-- Use the **Browse/Edit** tab to:
-  - Filter entries by model, tag, or keyword
-  - Compare responses visually
-  - Edit or delete entries
+- **ModelService**: Dynamically loads and updates the model registry (open and commercial)
+- **PromptService**: Manages prompt creation, validation, and saving to DB
+- **ExportService**: Converts prompt-response folders into static HTML
+- **DBManager**: Lightweight SQLite interface for indexing and searching entries
 
 ---
 
-## 🌐 Static Site Export
+## 🖥️ App Layout
 
-Generate a full HTML archive of all your prompts + responses:
+- **New Entry Tab**: Input your prompt, response, and select model. Adds metadata + saves all files.
+- **Browse/Edit Tab**: Search, filter, and edit existing entries (with full-text search).
+- **Compare Tab**: Compare responses from multiple models to the same prompt.
 
+---
+
+## 📁 Output Format
+
+Each saved entry is stored under `/prompts/` in the following format:
+
+```
+prompts/YYYY-MM-DD_slug/
+├── prompt.md
+├── GPT-4.md
+├── Claude.md
+└── metadata.json
+```
+
+---
+
+## 🧹 Formatting Tools
+
+The app uses:
+- `mdformat` + `mdformat-ruff`: To clean and lint Markdown files
+- `docx2md`: To convert DOCX to Markdown
+
+These are integrated into the save pipeline to keep file consistency.
+
+---
+
+## 🔄 Export Static Site (Optional)
+
+To export all entries to a static HTML archive:
 ```bash
 python scripts/export_static_site.py
 ```
-
-Output is written to the `dist/` directory with:
-- `index.html` for navigation
-- One folder per prompt with HTML and JSON
-
----
-
-## ⚙️ Config
-
-Stored in `data/config.json`:
-
-```json
-{
-  "theme": "dark",
-  "save_path": "prompts",
-  "use_database": true,
-  "database_path": "data/prompt_index.db"
-}
-```
+HTML files will be generated under the `dist/` directory.
 
 ---
 
@@ -137,19 +93,19 @@ Stored in `data/config.json`:
 
 ![](assets/workflow.png)
 
-This decoupling ensures that:
-- Business logic is isolated and testable
-- UI remains lightweight and responsive
-- Adding new features like autosync or cloud export becomes easier
+---
+
+## 📬 Contributing
+
+Please use the app to prepare your contributions. See the [main README](../README.md) and [CONTRIBUTING.md](../CONTRIBUTING.md) for full contributor guidelines.
 
 ---
 
-## 📄 License
+## 🪪 License
 
-MIT © [@sandy-sp](https://github.com/sandy-sp) — free to use, modify, and distribute.
+MIT © [@sandy-sp](https://github.com/sandy-sp)
 
 ---
 
-## 🙌 Acknowledgements
+> _This app is your companion for structured, searchable, and shareable prompt benchmarking. Use it to fuel collaborative AI insight._
 
-Built with ❤️ to make AI prompt testing and logging more structured, efficient, and beautiful.
