@@ -1,0 +1,12 @@
+prompt:
+  - 'prompts/**'
+
+metadata:
+  - '**/metadata.json'
+
+formatting:
+  - '**/*.md'
+
+good first issue:
+  - .github/ISSUE_TEMPLATE/good-first-issue-*
+
