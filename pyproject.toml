@@ -1,6 +1,6 @@
 [project]
 name = "ai-reply-index"
-version = "1.0.0"
+version = "0.1.0"
 description = "A GUI helper app to log AI prompts and responses."
 authors = [
     {name = "sandy-sp",email = "sandeep.paidipati@gmail.com"}
