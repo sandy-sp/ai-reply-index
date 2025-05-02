@@ -1,5 +1,5 @@
 {
-  "theme": "light",
+  "theme": "dark",
   "save_path": "prompts",
   "use_database": true,
   "database_path": "data/prompt_index.db"
