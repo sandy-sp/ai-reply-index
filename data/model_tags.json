@@ -54,7 +54,8 @@
     "deepseek-ai/DeepSeek-V3",
     "unsloth/Qwen2.5-7B-Instruct-unsloth-bnb-4bit",
     "bigscience/bloomz-560m",
-    "infly/OpenCoder-8B-Instruct"
+    "infly/OpenCoder-8B-Instruct",
+    "meta-llama/LlamaGuard-7b"
   ],
   "tags": []
 }
