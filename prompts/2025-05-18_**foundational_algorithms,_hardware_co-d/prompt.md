@@ -1,0 +1,14 @@
+# Prompt
+
+**Foundational Algorithms, Hardware Co-design, and Near-Term Applications of
+Quantum Artificial Intelligence (QuAI)**
+
+- **Focus Area:** Quantum Computing, Machine Learning Algorithms, Applied Quantum Information Science
+- **Prompt Details:** "Conduct a comprehensive research exploration into the synergistic intersection of quantum computing and artificial intelligence, focusing on:
+  - **Novel Quantum Machine Learning (QML) Paradigms:** Investigate and propose new QML algorithms (e.g., quantum kernel methods, quantum neural networks, quantum reinforcement learning, quantum generative models) that demonstrably offer theoretical or empirical advantages (e.g., speedup, improved generalization, different expressive power) over classical counterparts for specific classes of problems.
+  - **Hardware-Software Co-design for QuAI:** Analyze the interplay between QML algorithm design and the architectural constraints of current and near-future noisy intermediate-scale quantum (NISQ) devices and fault-tolerant quantum computers. How can algorithms be tailored for specific qubit modalities (superconducting, trapped ion, photonic, etc.), and how should hardware evolve to better support QML?
+  - **Resource-Efficient Quantum Algorithms and Error Mitigation:** Develop techniques for reducing the qubit, gate, and coherence time requirements for practical QML algorithms. Investigate advanced quantum error correction and mitigation strategies specifically tailored to the needs of QML to extract meaningful results from imperfect quantum hardware.
+  - **Benchmarking and Identifying "Quantum Advantage" in AI:** Establish rigorous benchmarking methodologies to compare QML algorithms against state-of-the-art classical AI on standardized datasets and well-defined tasks. Identify specific, high-impact application domains (e.g., drug discovery, materials science, financial modeling, complex systems optimization, fundamental physics simulation) where QuAI is most likely to achieve a significant practical quantum advantage in the near to medium term.
+  - **Theoretical Foundations of QuAI:** Explore the fundamental theoretical aspects of QML, including its learning capacity, generalization properties, relationship to classical complexity theory, and the potential for quantum effects to enhance learning in ways not possible classically.
+  - **Hybrid Quantum-Classical Systems:** Design and evaluate hybrid architectures that strategically combine the strengths of classical AI (e.g., for data pre/post-processing, control logic) with quantum co-processors for specific computationally intensive subroutines within larger AI workflows."
+- **Keywords for further research:** Quantum Machine Learning, Quantum Neural Networks, NISQ AI, Quantum Advantage AI, Quantum Algorithms, Hybrid Quantum-Classical AI, Quantum Hardware AI.
