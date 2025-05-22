@@ -1,0 +1,15 @@
+# Prompt
+
+**The Symbiotic Evolution of Neuroscience and AI: Leveraging Brain-Inspired
+Principles for Advanced AI and AI-Driven Tools for Deciphering Neural
+Complexity**
+
+- **Focus Area:** Cognitive Science, Computational Neuroscience, AI Architectures, Brain-Computer Interfaces
+- **Prompt Details:** "Undertake a synergistic research investigation into the increasingly intertwined relationship between neuroscience and artificial intelligence. This involves two primary thrusts: 1) Leveraging fundamental principles from biological neural processing, cognition, and development to inspire and engineer next-generation AI architectures with enhanced capabilities (e.g., robustness, efficiency, generalizability, common sense). 2) Applying advanced AI and machine learning techniques as powerful tools to analyze complex neural data, model brain function, and accelerate discoveries in basic and clinical neuroscience. This exploration should address:
+  - **Biologically Plausible and Neuromorphic AI Architectures:** Design and evaluate AI models and learning algorithms inspired by brain structures (e.g., hippocampus, neocortex, cerebellum), neural dynamics (e.g., spiking neurons, synaptic plasticity, oscillations), and cognitive architectures to achieve more human-like learning and reasoning.
+  - **AI for Decoding Complex Neural Codes and Brain Activity:** Develop sophisticated AI/ML methods (e.g., deep learning, dimensionality reduction, causal inference) to analyze large-scale neurophysiological data (e.g., fMRI, EEG, MEG, multi-unit recordings, calcium imaging) to understand how information is encoded, processed, and represented in the brain.
+  - **Computational Models of Cognitive Functions and Brain Disorders:** Build and validate AI-driven computational models of specific cognitive functions (e.g., memory formation and retrieval, decision-making, language processing, attention) and their dysfunction in neurological and psychiatric disorders, aiming to identify novel therapeutic targets.
+  - **AI-Enhanced Brain-Computer Interfaces (BCIs) and Neurofeedback:** Investigate the use of AI to improve the performance, adaptability, and intuitiveness of BCIs for communication, control, and rehabilitation, as well as for developing personalized neurofeedback protocols.
+  - **Understanding Learning and Development through AI-Neuroscience Analogies:** Use AI models as testbeds to explore theories of learning, development, and generalization in biological systems, and conversely, use insights from developmental neuroscience to guide the design of AI systems that learn more like humans.
+  - **Ethical Considerations of Advanced Neuro-AI Integration:** Examine the ethical implications arising from increasingly sophisticated neuro-AI technologies, including cognitive privacy, neural data security, potential for cognitive manipulation, and the definition of personhood in enhanced or hybrid intelligences."
+- **Keywords for further research:** Neuroscience-inspired AI, computational neuroscience AI, neuromorphic computing, AI brain modeling, AI neuroimaging analysis, brain-computer interface AI, cognitive AI, ethics of neurotechnology.
